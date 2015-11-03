@@ -26,6 +26,7 @@ $(function(){
     function dataReady(error, _allData, _metaData) {
         if (error) {
             console.log("ERROR on data file retrieval: \n" + error.statusText);
+            console.log(error);
             return;
         }
 

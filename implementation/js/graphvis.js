@@ -25,6 +25,6 @@ GraphVis.prototype.initializeVis = function () {
 
     self.svg = self.parentElement.select("svg");
 
-    self.svgWidth = 700;
-    self.svgHeight = 400;
-};
+    self.svgWidth = 340;
+    self.svgHeight = 200;
+}
