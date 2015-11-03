@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Sex, Drugs, and Munchies</title>
+	<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+	<script src="http://code.jquery.com/jquery-2.1.4.js" charset="utf-8"></script>
+	<script src="http://d3js.org/queue.v1.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/filtervis.js"></script>
+    <script src="js/graphvis.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+	<div class="page-container">
+		<header>
+			<h1>Sex, Drugs, and Munchies</h1>
+			<h2>A look at the correlation among health related habits</h2>
+			<h3>Presented by: Ryan Saunders (u0642422@utah.edu) and Bob Wong (bob.wong@nurs.utah.edu)</h3>
+		</header>
+
+		<section class="filter-container">
+			<header>
+				<h4>Filtering for <span id="filterTarget"></span></h4>
+				<h5>Click on a graph to change its filtering</h5>
+			</header>
+
+			<div class="filter-wrapper">
+                <svg id="filterVis" width="700" height="400"></svg>
+			</div>
+		</section>
+
+        <section class="graphs-container">
+            <section class="single-graph-container">
+                <header>
+                    <h4><span id="graph1" class="graph-name">Graph1</span></h4>
+                    <div class="add-graph"></div>
+                    <div class="copy-graph"></div>
+                    <div class="delete-graph"></div>
+                </header>
+                <div class="graph-wrapper">
+                    <svg id="graphVis1" width="340" height="200"></svg>
+                </div>
+                <section class="x-axis-label">
+                    <h5>Hours watching TV over 30 days</h5>
+                </section>
+            </section>
+        </section>
+</body>
+
+</html>
