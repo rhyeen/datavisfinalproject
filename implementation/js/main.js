@@ -1,6 +1,7 @@
 // on page load...
 $(function(){
     var allData = [];
+    var parsedData = [];
     var metaData = {};
 
     /**
@@ -22,7 +23,58 @@ $(function(){
 
     }
 
-    // call this function after both files are loaded -- error should be "null" if no error
+    /**
+     * FOR DEBUGGING:
+     * Parses the data to extract relevant information .
+     * @param  {object} data            the data to parse
+     */
+    function parseData(data, printToConsole) {
+        var i, j, value, objectKeys;
+
+        if (!data.length) {
+            console.log("No data to parse.");
+            return;
+        }
+
+        objectKeys = Object.keys(data[0]);
+
+        if (!objectKeys.length) {
+            console.log("No data keys to parse.");
+            return;
+        }
+
+        for (i=0; i < objectKeys.length; i++) {
+            // get each key
+            parsedData[objectKeys[i]] = {};
+            // check the keys value for duplicates
+            for (j=0; j < data.length; j++) {
+                value = data[j][objectKeys[i]];
+                // if value is null, set it to something useful
+                if (value === null) {
+                    value = "NULL";
+                }
+                // if we've already tagged this value, increment its value
+                if (parsedData[objectKeys[i]][value]) {
+                    parsedData[objectKeys[i]][value] += 1;
+                }
+                // otherwise, add the tag
+                else {
+                    parsedData[objectKeys[i]][value] = 1;
+                }
+            }
+        }
+
+        if (printToConsole) {
+            console.log(parsedData);
+        }
+    }
+
+    /**
+     * Callback once data is loaded
+     * @param  {object} error     description of error
+     * @param  {object} _allData  data retrieved
+     * @param  {object} _metaData metadata - if any
+     */
     function dataReady(error, _allData, _metaData) {
         if (error) {
             console.log("ERROR on data file retrieval: \n" + error.statusText);
@@ -32,6 +84,8 @@ $(function(){
 
         allData = _allData;
         metaData = _metaData;
+
+        parseData(allData, true);
 
         initializeVisualizations();
     }
