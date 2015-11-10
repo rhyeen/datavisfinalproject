@@ -15,3 +15,6 @@ See `design_documents/process_book/process_saunders_wong.pdf`
 
 # Data
 See the `data` folder and the `implementation/data` folder
+
+# In class feedback
+Feedback provided during class by another group can be read in `design_documents/design_studio_feedback.pdf`

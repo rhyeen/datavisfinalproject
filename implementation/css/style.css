@@ -135,3 +135,36 @@ footer {
     clear: both;
     text-align: center;
 }
+
+.xAxis, .yAxis {
+    font-size: 12px;
+}
+
+.xAxis path,
+.yAxis path {
+    fill: none;
+    stroke: #000000;
+}
+
+.graph {
+    fill: #08A4CF;
+}
+
+.graph-wrapper h5 {
+    position: absolute;
+    transform: rotate(-90deg);
+    transform-origin: left 0;
+    text-align: center;
+    width: 180px;
+    margin-top: 180px;
+    margin-left: -5px;
+}
+
+.graph-wrapper svg {
+    margin-top: 10px;
+    margin-left: 7px;
+}
+
+.x-axis-label {
+    margin-left: 50px;
+}

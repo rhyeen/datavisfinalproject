@@ -21,18 +21,19 @@ function GraphVis(_parentElement, _data, _metaData) {
  */
 GraphVis.prototype.initializeVis = function () {
     var xMax, xMin, yMax, yMin;
-    // var selectionX, selectionY;
+    var selGraph, areaGenerator;
     // var xAxisG, yAxisG;
     var self = this;
 
     self.svg = d3.select("#graphVis1");
 
-    self.svgWidth = 340;
+    self.svgWidth = 330;
     self.svgHeight = 200;
 
     self.svgMarginLeft = 40;
-    self.svgMarginLeft = 40;
+    self.svgMarginBottom = 20;
     self.svgGraphWidth = self.svgWidth - self.svgMarginLeft;
+    self.svgGraphHeight = self.svgHeight - self.svgMarginBottom;
 
     // define the max/min of x and y
     xMax = d3.max(self.displayData, function (d) {
@@ -44,26 +45,59 @@ GraphVis.prototype.initializeVis = function () {
     yMax = d3.max(self.displayData, function (d) {
                 return d.count;
             });
-    yMin = d3.min(self.displayData, function (d) {
-                return d.count;
-            });
+    // yMin = d3.min(self.displayData, function (d) {
+    //             return d.count;
+    //         });
+    yMin = 0;
 
+    // setup scales
     self.xScale = d3.scale.linear()
         .domain([xMin, xMax])
         .range([0, self.svgGraphWidth]);
     self.yScale = d3.scale.linear()
         .domain([yMin, yMax])
-        .range([0, self.svgHeight]);
+        .range([0, self.svgGraphHeight]);
 
-    self.xAxis = d3.svg.axis().scale(self.xScale);
-    self.yAxis = d3.svg.axis().scale(self.yScale).orient("left");
+    self.invertedYScale = d3.scale.linear()
+        .domain([yMax, yMin])
+        .range([0, self.svgGraphHeight]);
+
+    // setup axis
+    self.xAxis = d3.svg.axis()
+                    .scale(self.xScale)
+                    .orient("bottom");
+    self.yAxis = d3.svg.axis()
+                    .scale(self.invertedYScale)
+                    .orient("left");
 
     self.svg.select(".xAxis")
         .call(self.xAxis)
-        .attr("transform", "translate(" + self.svgMarginLeft + ",0)");
+        .attr("transform", "translate(" + (self.svgMarginLeft - 1) + "," + (self.svgGraphHeight + 1) + ")");
+
     self.svg.select(".yAxis")
         .call(self.yAxis)
+        .attr("transform", "translate(" + (self.svgMarginLeft - 1) + "," + 1 + ")");
+
+    // setup graph
+    areaGenerator = d3.svg.area()
+        .x(function (d) {
+            return self.xScale(d.value);
+        })
+        .y0(self.yScale(yMax))
+        .y1(function (d) {
+            return self.yScale(yMax) - self.yScale(d.count);
+        });
+
+    selGraph = self.svg.select(".graph")
         .attr("transform", "translate(" + self.svgMarginLeft + ",0)");
+
+    selGraph.selectAll("path").remove();
+
+
+    selGraph.append("path")
+        .attr("d", areaGenerator(self.displayData));
+
+    //areaGenerator = ;
 };
 
 /**
