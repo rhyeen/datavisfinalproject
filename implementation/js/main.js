@@ -3,6 +3,9 @@ $(function(){
     var allData = [];
     var parsedData = [];
     var metaData = {};
+    var filtering = {
+        xAxisSet: "Age"
+    };
 
     /**
      * Data is ready and visualization can begin.
@@ -11,10 +14,16 @@ $(function(){
      */
     function initializeVisualizations() {
         var eventHandler = d3.dispatch("selectionChanged");
-
         // Instantiate all Vis Objects here
+        
         var filterVis = new FilterVis(d3.select("#filterVis"), allData, metaData, eventHandler);
-        var graphVis = new GraphVis(d3.select("#graphVis1"), allData, metaData, eventHandler);
+        
+        filtering.xAxisSet = "Age";
+        var graphVis = new GraphVis(d3.select("#graphVis1"), allData, metaData, eventHandler, filtering);
+        filtering.xAxisSet = "# days used marijuana or hashish/month";
+        filtering.excludeInRange = "0";
+        filtering.exclusionId = "graph2Exclusion";
+        var graphVis2 = new GraphVis(d3.select("#graphVis2"), allData, metaData, eventHandler, filtering);
         
         // Bind the eventHandler to the Vis Objects
         eventHandler.on("selectionChanged.main", function (start, end) {
