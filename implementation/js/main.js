@@ -6,6 +6,9 @@ $(function(){
     var filtering = {
         xAxisSet: "Age"
     };
+    var inputFiltering = {
+        set: "Annual household income"
+    };
 
     /**
      * Data is ready and visualization can begin.
@@ -16,7 +19,8 @@ $(function(){
         var eventHandler = d3.dispatch("selectionChanged");
         // Instantiate all Vis Objects here
         
-        var filterVis = new FilterVis(d3.select("#filterVis"), allData, metaData, eventHandler);
+        inputFiltering.set = "Annual household income";
+        var filterVis = new FilterVis(d3.select("#filterVis"), allData, metaData, eventHandler, inputFiltering);
         
         filtering.xAxisSet = "Age";
         var graphVis = new GraphVis(d3.select("#graphVis1"), allData, metaData, eventHandler, filtering);

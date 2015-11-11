@@ -72,12 +72,12 @@ GraphVis.prototype.initializeVis = function () {
 
     // setup axis
     self.xAxis = d3.svg.axis()
-                    .scale(self.xScale)
-                    .orient("bottom")
-                    .tickValues(ticks);
+        .scale(self.xScale)
+        .orient("bottom")
+        .tickValues(ticks);
     self.yAxis = d3.svg.axis()
-                    .scale(self.invertedYScale)
-                    .orient("left");
+        .scale(self.invertedYScale)
+        .orient("left");
 
     // NOTE +/- 1 is for getting the graph off of the axis
     self.svg.select(".xAxis")
