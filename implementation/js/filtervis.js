@@ -4,14 +4,16 @@
  * @param {object} _data          reference to the data
  * @param {object} _metaData      reference to the metadata
  */
-function FilterVis(_parentElement, _data, _metaData, _eventHandler, _filtering) {
+function FilterVis(_parentElement, _data, _metaData, _eventHandler, _filtering, _filteringOutput) {
     var self = this;
 
     self.parentElement = _parentElement;
     self.data = _data;
     self.metaData = _metaData;
+    self.eventHandler = _eventHandler;
     self.displayData = [];
     self.filtering = _filtering;
+    self.filteringOutput = _filteringOutput;
 
     self.updateData();
     self.initializeVis();
@@ -24,8 +26,11 @@ function FilterVis(_parentElement, _data, _metaData, _eventHandler, _filtering) 
  */
 FilterVis.prototype.initializeVis = function () {
     var self = this;
-    var selGraph, selBars;
+    var selGraph, selBars,
+        selOverlay, selOverlayBars;
     var dataValues;
+    var brush, brushMouseMove, brushDeselectAll,
+        brushSelectionExists, getOutputFilteringSet;
     self.svg = self.parentElement;
 
     self.svgWidth = 400;
@@ -63,7 +68,7 @@ FilterVis.prototype.initializeVis = function () {
 
     self.colorScale = d3.scale.linear()
         .domain([yMin, yMax])
-        .range(["#DDD", "#333"]);
+        .range(["#DDD", "#444"]);
 
     // setup axis
     self.xAxis = d3.svg.axis()
@@ -85,7 +90,7 @@ FilterVis.prototype.initializeVis = function () {
             return dataValues[d];
         });
 
-    selGraph = self.svg.select(".graph");
+    selGraph = self.svg.select(".graph-filter");
 
     selBars = selGraph.selectAll("rect")
         .data(self.displayData);
@@ -102,15 +107,132 @@ FilterVis.prototype.initializeVis = function () {
         .attr("width", function (d, i) {
             return self.iScale(1);
         })
-        .attr("y", function (d) {
-            return 0;
-        })
-        .attr("height", function (d) {
-            return self.svgHeight;
-        })
+        .attr("y", 0)
+        .attr("height", self.svgHeight)
         .attr("fill", function (d) {
             return self.colorScale(d.count);
         })
+        .attr("transform", "translate(" + (self.svgMarginLeft) + "," + (self.svgMarginTop) + ")");
+
+    selOverlay = self.svg.select(".overlay-filter");
+    selOverlayBars = selOverlay.select("rect");
+
+    selOverlayBars.attr("x", 0) 
+        .attr("width", self.svgGraphWidth)
+        .attr("y", 0)
+        .attr("height", self.svgHeight)
+        .attr("transform", "translate(" + (self.svgMarginLeft) + "," + (self.svgMarginTop) + ")");
+
+    // brushing
+    
+    /**
+     * Returns whether or not the selection of the brush is significant enough to count as a selection.
+     */
+    brushSelectionExists = function() {
+        var brushRange;
+        var tolerance = 0.01;
+        if (!brush) {
+            return false;
+        }
+
+        brushRange = brush.extent();
+        
+        return Math.abs(brushRange[0] - brushRange[1]) >= tolerance;
+    };
+
+    getOutputFilteringSet = function () {
+        var brushRange, i, j, 
+            notSelected = [], 
+            foundInSelected,
+            selection = [];
+
+        isInArray = function (value, array) {
+            var index;
+            if (!array || !array.length) {
+                return false;
+            }
+            for (index = 0; index < array.length; index++) {
+                if (array[index] === value) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (brushSelectionExists()) {         
+            brushRange = brush.extent();
+            selection = self.iScale.domain().filter(function (d) {
+                // max value            
+                if(!self.iScale(d+1)) {
+                    return brushRange[1] > self.iScale(d);
+                }
+                return brushRange[0] < self.iScale(d+1) && brushRange[1] > self.iScale(d);
+            });
+
+            console.log("selection");
+            console.log(selection);
+            
+            // find all values not selected so we can mark them for the output graph
+            for (i=0; i < self.displayData.length; i++) {
+                foundInSelected = false;
+                if (!isInArray(i, selection)) {
+                    notSelected.push(i);
+                }
+            }
+        }
+        else {
+            // console.log("all selected");
+            delete self.filteringOutput[self.filtering.set];
+        }
+
+        console.log("notSelected");
+        console.log(notSelected);
+        // remove any filtering if nothing is manually selected (i.e. the whole graph is selected)
+        // otherwise add the filtering specified
+        self.filteringOutput[self.filtering.set] = [];
+        for (i=0; i < notSelected.length; i++) {
+            self.filteringOutput[self.filtering.set].push(self.displayData[notSelected[i]].value);
+        }
+        //console.log(self.filteringOutput);
+        self.eventHandler.selectionChanged();
+    };
+
+    /**
+     * REFERENCE chrisbrich, Nov 30, 2012. Retrieved: Nov 19, 2015
+     * SOURCE: http://bl.ocks.org/chrisbrich/4173587
+     * Selects the data that is within selection.
+     */
+    brushMouseMove = function() {
+        getOutputFilteringSet();
+    };
+
+    /**
+     * Starts brushing by deselecting previous selections.
+     */
+    brushDeselectAll = function() {
+        selOverlay.classed("overlay-filter", false);
+        selOverlay.classed("overlay-filter-deselect", true);
+        getOutputFilteringSet();
+    };
+
+    /**
+     * Removes selection if needed.
+     */
+    brushCheckSelection = function() {
+        selOverlay.classed("overlay-filter", !brushSelectionExists());
+        selOverlay.classed("overlay-filter-deselect", brushSelectionExists());
+        getOutputFilteringSet();
+    };
+
+    brush = d3.svg.brush().x(self.iScale)
+        .on("brush", brushMouseMove)
+        .on("brushstart", brushDeselectAll)
+        .on("brushend", brushCheckSelection);
+
+    self.svg.append("g").attr("class", "input-brush")
+        .call(brush)
+        .selectAll("rect")
+        .attr("height", self.svgHeight)
         .attr("transform", "translate(" + (self.svgMarginLeft) + "," + (self.svgMarginTop) + ")");
 };
 
@@ -168,7 +290,7 @@ FilterVis.prototype.sortData = function () {
     }
 
     if (self.filtering.set === "Annual household income") {
-        tempData.push(lookup["null"]);
+        tempData.push(lookup["Don't know"]);
         tempData.push(lookup["$0 to $4,999"]);
         tempData.push(lookup["$5,000 to $9,999"]);
         tempData.push(lookup["$10,000 to $14,999"]);

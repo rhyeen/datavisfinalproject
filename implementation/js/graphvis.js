@@ -4,7 +4,7 @@
  * @param {object} _data          reference to the data
  * @param {object} _metaData      reference to the metadata
  */
-function GraphVis(_parentElement, _data, _metaData, _eventHandler, _filtering) {
+function GraphVis(_parentElement, _data, _metaData, _eventHandler, _filtering, _filteringOutput) {
     var self = this;
 
     self.parentElement = _parentElement;
@@ -12,6 +12,7 @@ function GraphVis(_parentElement, _data, _metaData, _eventHandler, _filtering) {
     self.metaData = _metaData;
     self.displayData = [];
     self.filtering = _filtering;
+    self.filteringOutput = _filteringOutput;
 
     self.updateData();
     self.initializeVis();
@@ -113,23 +114,63 @@ GraphVis.prototype.initializeVis = function () {
 };
 
 /**
+ * Gets called by event handler and should update data based on filter.
+ * @param selection
+ */
+GraphVis.prototype.onSelectionChange = function () {
+    var self = this;
+    self.updateData();
+    self.initializeVis();
+};
+/**
  * Updates the display data.
  */
 GraphVis.prototype.updateData = function () {
     var self = this;
     var i, j,
-        objectKeys,
+        objectKeys, foKeys,
         ex,
         value,
+        isInArray,
+        isSelected,
         tempData = {};
 
     self.displayData = [];
 
-    for (i = 0; i < self.data.length; i++) {
-        if (!tempData[self.data[i][self.filtering.xAxisSet]]) {
-            tempData[self.data[i][self.filtering.xAxisSet]] = 0;
+    isInArray = function (value, array) {
+        var index;
+        if (!array || !array.length) {
+            return false;
         }
-        tempData[self.data[i][self.filtering.xAxisSet]] += 1;
+        for (index = 0; index < array.length; index++) {
+            if (array[index] === value) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // get keys for output filtering to determine what needs to be filtered
+    if (self.filteringOutput) {
+        foKeys = Object.keys(self.filteringOutput);
+    }
+
+    for (i = 0; i < self.data.length; i++) {
+        isSelected = true;
+        if (foKeys) {
+            for (j = 0; j < foKeys.length; j++) {
+                if (isInArray(self.data[i][foKeys], self.filteringOutput[foKeys])) {
+                    isSelected = false;
+                    break;
+                }
+            }
+        }
+        if (isSelected) {
+            if (!tempData[self.data[i][self.filtering.xAxisSet]]) {
+                tempData[self.data[i][self.filtering.xAxisSet]] = 0;
+            }
+            tempData[self.data[i][self.filtering.xAxisSet]] += 1;
+        }
     }
 
     objectKeys = Object.keys(tempData);

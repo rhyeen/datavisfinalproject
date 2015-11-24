@@ -9,6 +9,7 @@ $(function(){
     var inputFiltering = {
         set: "Annual household income"
     };
+    var outputFiltering = {};
 
     /**
      * Data is ready and visualization can begin.
@@ -20,18 +21,18 @@ $(function(){
         // Instantiate all Vis Objects here
         
         inputFiltering.set = "Annual household income";
-        var filterVis = new FilterVis(d3.select("#filterVis"), allData, metaData, eventHandler, inputFiltering);
+        var filterVis = new FilterVis(d3.select("#filterVis"), allData, metaData, eventHandler, inputFiltering, outputFiltering);
         
         filtering.xAxisSet = "Age";
-        var graphVis = new GraphVis(d3.select("#graphVis1"), allData, metaData, eventHandler, filtering);
+        var graphVis = new GraphVis(d3.select("#graphVis1"), allData, metaData, eventHandler, filtering, outputFiltering);
         filtering.xAxisSet = "# days used marijuana or hashish/month";
         filtering.excludeInRange = "0";
         filtering.exclusionId = "graph2Exclusion";
-        var graphVis2 = new GraphVis(d3.select("#graphVis2"), allData, metaData, eventHandler, filtering);
+        var graphVis2 = new GraphVis(d3.select("#graphVis2"), allData, metaData, eventHandler, filtering, outputFiltering);
         
         // Bind the eventHandler to the Vis Objects
-        eventHandler.on("selectionChanged.main", function (start, end) {
-            graphVis.onSelectionChange(start, end);
+        eventHandler.on("selectionChanged.main", function () {
+            graphVis2.onSelectionChange();
         });
 
     }
@@ -83,7 +84,7 @@ $(function(){
             allData[i]["Annual household income"] === "Over $20,000" ||
             allData[i]["Annual household income"] === "Under $20,000" ||
             allData[i]["Annual household income"] === "Refused") {
-                allData[i]["Annual household income"] = null;
+                allData[i]["Annual household income"] = "Don't know";
             }
             fromNullToZero(i, "Avg # alcoholic drinks/day -past 12 mos");
             fromNullToZero(i, "Avg # cigarettes/day during past 30 days");

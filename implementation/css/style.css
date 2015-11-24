@@ -160,6 +160,17 @@ footer {
    fill: #999;
 }
 
+.overlay-filter rect {
+    fill: #3CD1FA;
+    fill-opacity: .75;
+    mix-blend-mode: color;
+}
+
+.overlay-filter-deselect rect {
+    fill: #3CD1FA;
+    fill-opacity: 0;
+}
+
 .graph-wrapper h5 {
     position: absolute;
     transform: rotate(-90deg);
@@ -177,4 +188,10 @@ footer {
 
 .x-axis-label {
     margin-left: 50px;
+}
+
+.input-brush {
+    fill: #3CD1FA;
+    fill-opacity: .75;
+    mix-blend-mode: color;
 }
