@@ -9,6 +9,7 @@
     <script src="js/main.js"></script>
     <script src="js/filtervis.js"></script>
     <script src="js/graphvis.js"></script>
+    <script src="js/filtertoggle.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
@@ -18,29 +19,18 @@
 			<h1>Sex, Drugs, and Munchies</h1>
 			<h2>A look at the correlation among health related habits</h2>
 		</header>
-
-		<section class="filter-container">
-			<header>
-				<h4>Filtering for <span id="filterTarget">Graph 1</span></h4>
-				<h5>Click on a graph to change its filtering</h5>
-			</header>
-
-			<div class="filter-wrapper">
-                <h4>Personal Information</h4>
-                <h5>Annual household income</h5>
-                <svg id="filterVis" width="700" height="400">
-                    <g class="xAxis"></g>
-                    <g class="yAxis"></g>
-                    <g class="graph-filter"></g>
-                    <g class="overlay-filter">
-                        <rect></rect>
-                    </g>
-                </svg>
-			</div>
-		</section>
-
-        <section class="graphs-container">
-            <section class="single-graph-container active">
+        <div class="extra-note">
+            <div class="graph-note">
+                <h5>Click on a graph to change its filtering</h5>
+                <h5>Edit a graph by clicking the pencil icons</h5>
+            </div>
+            <div class="filter-note">
+                <h5>Click on a filter group to expand</h5>
+                <h5>Hover over a filter to view details</h5>
+            </div>
+        </div>
+        <section id="graphsContainer" class="graphs-container">
+            <!--<section class="single-graph-container active" onclick="selectGraph('graph1')" >
                 <header>
                     <h4><span id="graph1" class="graph-name">Graph 1</span></h4>
                     <h6 id="graph1Exclusion"></h6>
@@ -61,7 +51,7 @@
                 </section>
             </section>
 
-            <section class="single-graph-container">
+            <section class="single-graph-container" onclick="selectGraph('graph2')" >
                 <header>
                     <h4><span id="graph2" class="graph-name">Graph 2</span></h4>
                     <h6 id="graph2Exclusion"></h6>
@@ -80,8 +70,189 @@
                 <section class="x-axis-label">
                     <h5>Days per month used marijuana*</h5>
                 </section>
-            </section>
+            </section>-->
         </section>
+
+		<section class="filter-container">
+			<header>
+				<h4>Filtering for <span id="filterTarget">Graph 1</span></h4>
+                <!--<h5>Hover over a filter to view details</h5>-->
+			</header>
+
+			<div id="groupPersonal" class="filter-wrapper-active"  onclick="toggleFilter('groupPersonal', null, null, 'personal')">
+                <h4>Personal Information</h4>
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisIncome', true, 'personal')" onmouseout="toggleFilter('filterVisIncome', false)">
+                    <h5>Annual household income</h5>
+                    <svg id="filterVisIncome" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisAge', true, 'personal')" onmouseout="toggleFilter('filterVisAge', false)">
+                    <h5>Age</h5>
+                    <svg id="filterVisAge" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisEducation', true, 'personal')" onmouseout="toggleFilter('filterVisEducation', false)">
+                    <h5>Education</h5>
+                    <svg id="filterVisEducation" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisGender', true, 'personal')" onmouseout="toggleFilter('filterVisGender', false)">
+                    <h5>Gender</h5>
+                    <svg id="filterVisGender" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisMarital', true, 'personal')" onmouseout="toggleFilter('filterVisMarital', false)">
+                    <h5>Marital status</h5>
+                    <svg id="filterVisMarital" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisRace', true, 'personal')" onmouseout="toggleFilter('filterVisRace', false)">
+                    <h5>Race</h5>
+                    <svg id="filterVisRace" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+			</div>
+
+            <div id="groupDiet" class="filter-wrapper-inactive" onclick="toggleFilter('groupDiet', null, null, 'diet')">
+                <h4>Dietary Behavior</h4>
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisGreen', true, 'diet')" onmouseout="toggleFilter('filterVisGreen', false)">
+                    <h5>Dark green vegetables available at home</h5>
+                    <svg id="filterVisGreen" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisFruit', true, 'diet')" onmouseout="toggleFilter('filterVisFruit', false)">
+                    <h5>Fruits available at home</h5>
+                    <svg id="filterVisFruit" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisSalt', true, 'diet')" onmouseout="toggleFilter('filterVisSalt', false)">
+                    <h5>Salty snacks available at home</h5>
+                    <svg id="filterVisSalt" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisSoft', true, 'diet')" onmouseout="toggleFilter('filterVisSoft', false)">
+                    <h5>Soft drinks available at home</h5>
+                    <svg id="filterVisSoft" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisMilk', true, 'diet')" onmouseout="toggleFilter('filterVisMilk', false)">
+                    <h5>Fat-free/low fat milk available at home</h5>
+                    <svg id="filterVisMilk" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisStore', true, 'diet')" onmouseout="toggleFilter('filterVisStore', false)">
+                    <h5>Money spent at grocery store per month</h5>
+                    <svg id="filterVisStore" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisCarry', true, 'diet')" onmouseout="toggleFilter('filterVisCarry', false)">
+                    <h5>Money spent on carryout/delivered foods per month</h5>
+                    <svg id="filterVisCarry" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+
+                <div class="filter-graph" onmouseover="toggleFilter('filterVisOut', true, 'diet')" onmouseout="toggleFilter('filterVisOut', false)">
+                    <h5>Money spent on eating out per month</h5>
+                    <svg id="filterVisOut" width="480" height="10">
+                        <g class="xAxis"></g>
+                        <g class="yAxis"></g>
+                        <g class="graph-filter"></g>
+                        <g class="overlay-filter">
+                            <rect></rect>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+		</section>
         <footer>
             <h3>Presented by: Ryan Saunders (u0642422@utah.edu) and Bob Wong (bob.wong@nurs.utah.edu)</h3>
         </footer>

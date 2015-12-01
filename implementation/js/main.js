@@ -3,13 +3,183 @@ $(function(){
     var allData = [];
     var parsedData = [];
     var metaData = {};
-    var filtering = {
-        xAxisSet: "Age"
+    var outputFiltering = {
+        brush: {}
     };
-    var inputFiltering = {
-        set: "Annual household income"
+    var filterEventHandler = d3.dispatch("toggleFilter", "selectGraph");
+    var eventHandler = d3.dispatch("selectionChanged");
+    var filterVis = {};
+    var filterGroup = "personal";
+    var selectedGraph;
+    var selectedGraphNumber;
+    var filterGroups = ["groupPersonal", "groupDiet"];
+    var graphs = {
+        lastId: 0
     };
-    var outputFiltering = {};
+
+    window.selectGraph = function(id, number) {
+        number = parseInt(number);
+        var graphSection, i, keys, graphNumber;
+        
+        if (selectedGraph === id) {
+            console.log("already selected graph");
+            return;
+        }
+        //console.log("selecting graph:" + id);
+        selectedGraph = id;
+        selectedGraphNumber = number;
+        //// update visuals
+        // remove previous active class
+        keys = Object.keys(graphs);
+        for (i = 0; i < keys.length; i++) {
+            if (keys[i] !== 'lastId') {
+                graphNumber = keys[i].split("graph");
+                graphNumber = graphNumber[1];
+                graphSection = document.getElementById("graphSection" + graphNumber);
+                graphSection.className = "single-graph-container";
+            }
+        }
+        
+        // add active class
+        graphSection = document.getElementById("graphSection" + number);
+        graphSection.className += " active";
+        
+        // update filters
+        filterEventHandler.selectGraph(id);
+    };
+
+    window.toggleFilter = function(id, show, group, changeGroup) {
+        var groupTag, i;
+
+        // changing group
+        if (changeGroup) {
+            filterGroup = changeGroup;
+
+            for (i=0; i < filterGroups.length; i++) {
+                groupTag = document.getElementById(filterGroups[i]);
+                if (filterGroups[i] === id) {
+                    groupTag.className = "filter-wrapper-active";
+                }
+                else {
+                    groupTag.className = "filter-wrapper-inactive";
+                }
+            }
+
+            return;
+        }
+        // don't care about onmouseout
+        if (!show) {
+            return;
+        }
+        // keep selected if we are hovering over different groups
+        if (group !== filterGroup && !changeGroup) {
+            return;
+        }
+        filterEventHandler.toggleFilter(id, show, changeGroup);
+    };
+    
+    window.addNewGraph = function() {
+        addGraph();
+    };
+    
+    window.copyGraph = function(number) {
+        var i, keys, filter, j, filterInput, newFilter;
+
+        // copy the filtering from this graph to the newly added graph
+        filter = outputFiltering.brush["graph" + number];
+        keys = Object.keys(filter);
+        
+        newFilter = outputFiltering.brush["graph" + (graphs.lastId + 1)] = {};
+        
+        // filtering inputs
+        for (i = 0; i < keys.length; i++) {
+            filterInput = filter[keys[i]];
+            newFilter[keys[i]] = [];
+            // values of deselected items
+            for (j = 0; j < filterInput.length; j++) {
+                newFilter[keys[i]].push(filterInput[j]);
+            }
+        }
+        debugger;
+        addGraph();
+    }
+    
+    window.deleteGraph = function(number) {
+        number = parseInt(number);
+        var graphSection, keys, i, graphNumber;
+        keys = Object.keys(graphs);
+        
+        // if this is the only graph, it cannot be removed
+        // note: keys also contains lastId
+        if (keys.length < 3) {
+            return;
+        }
+        
+        graphSection = document.getElementById("graphSection" + number);
+        // remove the element
+        graphSection.parentNode.removeChild(graphSection);
+        
+        // remove from graph array
+        delete graphs["graph" + number];
+        
+        // update the keys
+        keys = Object.keys(graphs);
+        
+        // if this graph was selected, select a different graph
+        debugger;
+        if (selectedGraphNumber === number) {
+            for (i = 0; i < keys.length; i++) {
+                if (keys[i] !== 'lastId') {
+                    graphNumber = keys[i].split("graph");
+                    graphNumber = graphNumber[1];
+                    selectGraph(keys[i], graphNumber);
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Add a graph to the view
+     */
+    function addGraph() {
+        var id, filtering, 
+            htmlAddition = "";
+        // generate a new graph
+        var graphsContainer = document.getElementById("graphsContainer");
+        graphs.lastId += 1;
+
+        // filtering.xAxisSet = "# days used marijuana or hashish/month";
+        // filtering.excludeInRange = "0";
+        // filtering.exclusionId = "graph1Exclusion";
+        
+        id = "graph" + graphs.lastId;
+           
+        filtering = {
+            xAxisSet: "Age",
+            id: id
+        };
+        
+        htmlAddition += "<section id=\"graphSection" + graphs.lastId + "\" class=\"single-graph-container active\">";
+        htmlAddition += "<header>";
+        htmlAddition += "<h4 onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\"><span id=\"" + id + "Name\" class=\"graph-name\">Graph " + graphs.lastId + "</span></h4>";      
+        htmlAddition += "<div class=\"delete-graph\" onclick=\"deleteGraph('" + graphs.lastId + "')\"></div><div class=\"copy-graph\" onclick=\"copyGraph('" + graphs.lastId + "')\"></div><div class=\"add-graph\" onclick=\"addNewGraph()\"></div>";
+        htmlAddition += "<h6 id=\"" + id + "Exclusion\"  onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\"></h6>"; 
+        htmlAddition += "</header>";
+        htmlAddition += "<div class=\"graph-wrapper\" onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\">";
+        htmlAddition += "<h5>Count</h5>";
+        htmlAddition += "<svg id=\"" + id + "\" width=\"340\" height=\"200\">";
+        htmlAddition += "<g class=\"xAxis\"></g><g class=\"yAxis\"></g><g class=\"graph\"></g>";
+        htmlAddition += "</svg>";
+        htmlAddition += "</div>";
+        htmlAddition += "<section class=\"x-axis-label\"><h5>" + filtering.xAxisSet + "</h5></section>";
+        htmlAddition += "</section>";
+        graphsContainer.innerHTML += htmlAddition;
+        
+        // bind graph in d3
+        graphs[id] = new GraphVis(d3.select("#" + id), allData, metaData, eventHandler, filtering, outputFiltering);
+        selectGraph(id, graphs.lastId);      
+    }
 
     /**
      * Data is ready and visualization can begin.
@@ -17,24 +187,60 @@ $(function(){
      * @return {[type]} [description]
      */
     function initializeVisualizations() {
-        var eventHandler = d3.dispatch("selectionChanged");
-        // Instantiate all Vis Objects here
+        var i, keys, addGraphFilter;
         
-        inputFiltering.set = "Annual household income";
-        var filterVis = new FilterVis(d3.select("#filterVis"), allData, metaData, eventHandler, inputFiltering, outputFiltering);
+        addGraphFilter = function(id, setName, group) {
+            var idHash = "#" + id;
+            filterVis[id] = new FilterVis(d3.select(idHash), allData, metaData, eventHandler, {set: setName, id: id, group: group, graph: selectedGraph}, outputFiltering);            
+        };
+              
+        addGraph();
         
-        filtering.xAxisSet = "Age";
-        var graphVis = new GraphVis(d3.select("#graphVis1"), allData, metaData, eventHandler, filtering, outputFiltering);
-        filtering.xAxisSet = "# days used marijuana or hashish/month";
-        filtering.excludeInRange = "0";
-        filtering.exclusionId = "graph2Exclusion";
-        var graphVis2 = new GraphVis(d3.select("#graphVis2"), allData, metaData, eventHandler, filtering, outputFiltering);
+        // filter graphs        
+        addGraphFilter("filterVisIncome", "Annual household income", "personal");
+        addGraphFilter("filterVisAge", "Age", "personal");
+        addGraphFilter("filterVisEducation", "Education", "personal");
+        addGraphFilter("filterVisGender", "Gender", "personal");
+        addGraphFilter("filterVisMarital", "Marital status", "personal");
+        addGraphFilter("filterVisRace", "Race", "personal");
         
-        // Bind the eventHandler to the Vis Objects
+        addGraphFilter("filterVisGreen", "Dark green vegetables available at home", "diet");
+        addGraphFilter("filterVisFruit", "Fruits available at home", "diet");
+        addGraphFilter("filterVisMilk", "Fat-free/low fat milk available at home", "diet");
+        addGraphFilter("filterVisSalt", "Salty snacks available at home", "diet");
+        addGraphFilter("filterVisSoft", "Soft drinks available at home", "diet");
+        addGraphFilter("filterVisStore", "Money spent at supermarket/grocery store", "diet");
+        addGraphFilter("filterVisCarry", "Money spent on carryout/delivered foods", "diet");
+        addGraphFilter("filterVisOut", "Money spent on eating out", "diet");
+        
+        // output graphs
+        // filtering.xAxisSet = "Age";
+        // var graphVis = new GraphVis(d3.select("graphVis1"), allData, metaData, eventHandler, filtering, outputFiltering);
+        // filtering.xAxisSet = "# days used marijuana or hashish/month";
+        // filtering.excludeInRange = "0";
+        // filtering.exclusionId = "graph2Exclusion";
+        // var graphVis2 = new GraphVis(d3.select("#graphVis2"), allData, metaData, eventHandler, filtering, outputFiltering);
+        
+        // Bind the eventHandler to the Objects
         eventHandler.on("selectionChanged.main", function () {
-            graphVis2.onSelectionChange();
+            graphs[selectedGraph].onSelectionChange();
         });
 
+        filterEventHandler.on("toggleFilter.main", function (id, show) {
+            //filterVis[id].onToggleFilter(id);
+            keys = Object.keys(filterVis);
+            for (i = 0; i < keys.length; i++) {
+                filterVis[keys[i]].onToggleFilter(id, filterGroup);
+            }  
+        });
+        
+        filterEventHandler.on("selectGraph.main", function (id) {
+            keys = Object.keys(filterVis);
+            for (i = 0; i < keys.length; i++) {
+                filterVis[keys[i]].selectGraph(id);
+            }
+            graphs[selectedGraph].onSelectionChange();
+        });
     }
 
     /**
@@ -129,7 +335,7 @@ $(function(){
             if (allData[i]["Marital status"] === "Dont know" ||
             !allData[i]["Marital status"] ||
             allData[i]["Marital status"] === "Refused") {
-                allData[i]["Marital status"] = "No Answer";
+                allData[i]["Marital status"] = "No answer";
             } 
             fromNullToZero(i, "Money spent at supermarket/grocery store");
             fromNullToZero(i, "Money spent on carryout/delivered foods");
@@ -148,7 +354,38 @@ $(function(){
             fromNullToZero(i, "Total number of sex partners/year");
 
             // it's hard to decipher what NULL means...
-            delete allData[i]["Tried to quit smoking"];           
+            delete allData[i]["Tried to quit smoking"];
+
+            // shorten
+            if (allData[i]["Education"] === "9-11th Grade (Includes 12th grade with no diploma)") {
+                allData[i]["Education"] = "9-11th Grade";
+            }
+            else if (allData[i]["Education"] === "College Graduate or above") {
+                allData[i]["Education"] = "College Grad";
+            } 
+            else if (allData[i]["Education"] === "High School Grad/GED or Equivalent") {
+                allData[i]["Education"] = "High School Grad";
+            } 
+            else if (allData[i]["Education"] === "Less Than 9th Grade") {
+                allData[i]["Education"] = "< 9th Grade";
+            } 
+            else if (allData[i]["Education"] === "Some College or AA degree") {
+                allData[i]["Education"] = "Some College";
+            } 
+
+            if (allData[i]["Marital status"] === "Living with partner") {
+                allData[i]["Marital status"] = "With partner";
+            } 
+
+            if (allData[i]["Race"] === "Non-Hispanic Black") {
+                allData[i]["Race"] = "Black";
+            }
+            else if (allData[i]["Race"] === "Non-Hispanic White") {
+                allData[i]["Race"] = "White";
+            }
+            else if (allData[i]["Race"] === "Other Hispanic") {
+                allData[i]["Race"] = "Hispanic";
+            }    
         }
     }
     /**

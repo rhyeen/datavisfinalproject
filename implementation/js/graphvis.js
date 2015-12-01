@@ -27,27 +27,31 @@ GraphVis.prototype.initializeVis = function () {
     var ticks;
     // var xAxisG, yAxisG;
     var self = this;
-    self.svg = self.parentElement;
+    //console.log("initializing " + self.filtering.id);
+
+    // old method doesn't allow updating once the reference is lost (a new graph is made)
+    //self.svg = self.parentElement;
+    self.svg = d3.select("#" + self.filtering.id);
 
     self.svgWidth = 330;
     self.svgHeight = 200;
 
-    self.svgMarginTop = 3;
-    self.svgMarginLeft = 40;
+    self.svgMarginTop = 5;
+    self.svgMarginLeft = 45;
     self.svgMarginBottom = 20;
     self.svgGraphWidth = self.svgWidth - self.svgMarginLeft;
     self.svgGraphHeight = self.svgHeight - self.svgMarginBottom - self.svgMarginTop;
 
     // define the max/min of x and y
     xMax = d3.max(self.displayData, function (d) {
-                return d.value;
-            });
+            return d.value;
+        });
     xMin = d3.min(self.displayData, function (d) {
-                return d.value;
-            });
+            return d.value;
+        });
     yMax = d3.max(self.displayData, function (d) {
-                return d.count;
-            });
+            return d.count;
+        });
     // yMin = d3.min(self.displayData, function (d) {
     //             return d.count;
     //         });
@@ -89,8 +93,6 @@ GraphVis.prototype.initializeVis = function () {
         .call(self.yAxis)
         .attr("transform", "translate(" + (self.svgMarginLeft - 1) + "," + (1 + self.svgMarginTop) + ")");
 
-
-
     // setup graph
     areaGenerator = d3.svg.area()
         .x(function (d) {
@@ -109,8 +111,6 @@ GraphVis.prototype.initializeVis = function () {
 
     selGraph.append("path")
         .attr("d", areaGenerator(self.displayData));
-
-    //areaGenerator = ;
 };
 
 /**
@@ -119,6 +119,7 @@ GraphVis.prototype.initializeVis = function () {
  */
 GraphVis.prototype.onSelectionChange = function () {
     var self = this;
+    //console.log(self.filteringOutput);
     self.updateData();
     self.initializeVis();
 };
@@ -154,12 +155,12 @@ GraphVis.prototype.updateData = function () {
     if (self.filteringOutput) {
         foKeys = Object.keys(self.filteringOutput);
     }
-
+    //console.log(self.filteringOutput);
     for (i = 0; i < self.data.length; i++) {
         isSelected = true;
         if (foKeys) {
             for (j = 0; j < foKeys.length; j++) {
-                if (isInArray(self.data[i][foKeys], self.filteringOutput[foKeys])) {
+                if (isInArray(self.data[i][foKeys[j]], self.filteringOutput[foKeys[j]])) {
                     isSelected = false;
                     break;
                 }

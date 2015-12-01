@@ -63,7 +63,6 @@ a:hover {text-decoration: none;}
 
 .page-container {
     margin: 20px;
-    width: 740px;
 }
 
 .main-header {
@@ -96,8 +95,10 @@ h4 {
 }
 
 h5 {
+    padding-top: 10px;
     font-size: 14px;
     line-height: 20px;
+    transition: all 0.1s;
 }
 
 h6 {
@@ -106,19 +107,22 @@ h6 {
     height: 13px;
 }
 
+.extra-note div {
+    display: inline-block;
+    width: 360px;
+}
+
 .filter-container {
+    margin-top: 10px;
     border: 3px solid #3CD1FA;
     padding: 10px;
     box-shadow: 0px 0px 10px #3CD1FA;
-    width: 700px;
+    width: 480px;
+    float: left;
 }
 
 .filter-container header {
     color: #08A4CF;
-}
-
-.graphs-container {
-    width: 740px;
 }
 
 .single-graph-container {
@@ -128,12 +132,14 @@ h6 {
     padding: 6px;
     width: 340px;
     float: left;
+    cursor: pointer;
 }
 
 .single-graph-container.active {
     border: 3px solid #3CD1FA;
     color: #08A4CF;
     box-shadow: 0px 0px 10px #3CD1FA;
+    cursor: default;
 }
 
 footer {
@@ -171,6 +177,12 @@ footer {
     fill-opacity: 0;
 }
 
+.graphs-container {
+    width: 355px;
+    margin-right: 10px;
+    float: left;
+}
+
 .graph-wrapper h5 {
     position: absolute;
     transform: rotate(-90deg);
@@ -194,4 +206,58 @@ footer {
     fill: #3CD1FA;
     fill-opacity: .75;
     mix-blend-mode: color;
+}
+
+.filter-graph {
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+}
+
+.filter-graph:hover h5 {
+    color: #08A4CF;
+}
+
+.filter-wrapper-inactive h4,
+.filter-wrapper-active h4 {
+    cursor: pointer;
+}
+
+.filter-wrapper-inactive h5 {
+    display: none;
+}
+
+.filter-wrapper-active h5 {
+    display: block;
+}
+
+.single-graph-container h4 {
+    float: left;
+}
+
+.add-graph,
+.copy-graph,
+.delete-graph {
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    float: right;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.add-graph {
+    background-color: #79D841;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' x='0px' y='0px' width='30px' height='30px' viewBox='0 0 30 30' enable-background='new 0 0 30 30' xml:space='preserve' stroke='#FFF'><g><line stroke-width='3' stroke-miterlimit='10' x1='15' y1='5' x2='15' y2='24.999'/></g><g><line stroke-width='3' stroke-miterlimit='10' x1='5' y1='15' x2='25' y2='15'/></g></svg>");
+}
+
+.copy-graph {
+    background-color: #3861E5;
+    
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' x='0px' y='0px' width='30px' height='30px' viewBox='0 0 30 30' enable-background='new 0 0 30 30' xml:space='preserve' stroke='#FFF'><polyline fill='none' stroke-width='2' stroke-miterlimit='10' points='14.048 8.871 14.048 7 7.032 7 7.032 14.016 8.903 14.016 '/><rect x='11.709' y='11.677' fill='none' stroke-width='2' stroke-miterlimit='10' width='10.291' height='9.822'/></svg>");
+}
+
+.delete-graph {
+    background-color: #C6381C;   
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' x='0px' y='0px' width='30px' height='30px' viewBox='0 0 30 30' enable-background='new 0 0 30 30' xml:space='preserve' fill='none' stroke='#FFF'><g><line stroke-width='3' stroke-miterlimit='10' x1='22.5' y1='7.5' x2='7.5' y2='22.499'/></g><g><line stroke-width='3' stroke-miterlimit='10' x1='7.5' y1='7.5' x2='22.5' y2='22.499'/></g></svg>");     
 }
