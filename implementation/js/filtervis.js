@@ -36,7 +36,7 @@ FilterVis.prototype.initializeVis = function () {
         numOfTicks, i, tickSpan,
         brushCheckSelection,
         saveBrushExtent,
-        yMax, yMin;
+        yMax, yMin, ticks;
     self.svg = self.parentElement;
 
     self.svgWidth = 400;
@@ -83,18 +83,34 @@ FilterVis.prototype.initializeVis = function () {
 
     // if not ordinal data
     if (self.filtering.set === "Age" ||
-    self.filtering.set === "Money spent at supermarket/grocery store" ||
-    self.filtering.set === "Money spent on carryout/delivered foods" ||
-    self.filtering.set === "Money spent on eating out") {
+        self.filtering.set === "# days used marijuana or hashish/month" ||
+        self.filtering.set === "# days used methamphetamine/month" ||
+        self.filtering.set === "# of days used cocaine/month" ||
+        self.filtering.set === "# of days used heroin/month" ||
+        self.filtering.set === "# sex partners five years older/year" ||
+        self.filtering.set === "# sex partners five years younger/year" ||
+        self.filtering.set === "Age started smoking cigarettes regularly" ||
+        self.filtering.set === "Avg # alcoholic drinks/day -past 12 mos" ||
+        self.filtering.set === "Avg # cigarettes/day during past 30 days" ||
+        self.filtering.set === "How old when first had sex" ||
+        self.filtering.set === "Money spent at supermarket/grocery store" ||
+        self.filtering.set === "Money spent on carryout/delivered foods" ||
+        self.filtering.set === "Money spent on eating out" ||
+        self.filtering.set === "Total number of sex partners/year") {
         numOfTicks = 15;
         tickSpan = Math.floor(dataValues.length / numOfTicks);
         // CITE: mbostock (July 31, 2012) on Nov 24th, 2015 
         // SORUCE: http://bl.ocks.org/mbostock/3212294
-        self.xAxis.tickValues(self.iScale.domain()
+        ticks = self.iScale.domain()
             .filter(function(d, i) {
                 return !(i % tickSpan);
-            })
-        );
+            });
+        // if (self.filtering.set === "How old when first had sex" ||
+        //     self.filtering.set === "Age started smoking cigarettes regularly") {
+        //         debugger;
+        //     ticks.push("Never");
+        // }
+        self.xAxis.tickValues(ticks);
         // END CITE
         //self.xAxis.tickValues(tickValues);
     }
@@ -282,6 +298,7 @@ FilterVis.prototype.initializeVis = function () {
         .attr("height", self.svgHeight)
         .attr("transform", "translate(" + (self.svgMarginLeft) + "," + (self.svgMarginTop) + ")");
 
+    saveBrushExtent();
     self.onToggleFilter();
 };
 
@@ -313,17 +330,22 @@ FilterVis.prototype.selectGraph = function (id) {
  */
 FilterVis.prototype.onToggleFilter = function (id, group) {
     var self = this;
-
     if (id === self.filtering.id && group === self.filtering.group) {
         self.svg.select(".xAxis")
             .attr("display", null);
         self.svg
+            .transition()
+            .duration(100)
+            .ease("linear")
             .attr("height", 110);
     }
     else {
         self.svg.select(".xAxis")
             .attr("display", "none");
         self.svg
+            .transition()
+            .duration(100)
+            .ease("linear")
             .attr("height", 10);
     }
 
@@ -368,9 +390,22 @@ FilterVis.prototype.updateData = function () {
 
         // some sets are continous
         if (self.filtering.set === "Age" ||
+            self.filtering.set === "# days used marijuana or hashish/month" ||
+            self.filtering.set === "# days used methamphetamine/month" ||
+            self.filtering.set === "# of days used cocaine/month" ||
+            self.filtering.set === "# of days used heroin/month" ||
+            self.filtering.set === "# sex partners five years older/year" ||
+            self.filtering.set === "# sex partners five years younger/year" ||
+            self.filtering.set === "Age started smoking cigarettes regularly" ||
+            self.filtering.set === "Avg # alcoholic drinks/day -past 12 mos" ||
+            self.filtering.set === "Avg # cigarettes/day during past 30 days" ||
+            self.filtering.set === "Day vigorous recreation / week" ||
+            self.filtering.set === "Days walk or bike / week" ||
+            self.filtering.set === "How old when first had sex" ||
             self.filtering.set === "Money spent at supermarket/grocery store" ||
             self.filtering.set === "Money spent on carryout/delivered foods" ||
-            self.filtering.set === "Money spent on eating out") {
+            self.filtering.set === "Money spent on eating out" ||
+            self.filtering.set === "Total number of sex partners/year") {
             value = parseInt(value);
         }
         self.displayData.push({
@@ -445,6 +480,41 @@ FilterVis.prototype.sortData = function () {
         tempData.push(lookup["Sometimes"]);
         tempData.push(lookup["Most of the time"]);
         tempData.push(lookup["Always"]);
+    }
+    else if (self.filtering.set === "# times had sex without condom/year") {
+        tempData.push(lookup["No sex"]);        
+        tempData.push(lookup["Never"]);
+        tempData.push(lookup["< Half the time"]);
+        tempData.push(lookup["Half the time"]);        
+        tempData.push(lookup["> Half the time"]);
+        tempData.push(lookup["Always"]);
+    }
+    else if (self.filtering.set === "# times had vaginal or anal sex/year") {
+        tempData.push(lookup["Never"]);        
+        tempData.push(lookup["Once"]);
+        tempData.push(lookup["2-11 times"]);
+        tempData.push(lookup["12-51 times"]);        
+        tempData.push(lookup["52-103 times"]);
+        tempData.push(lookup["104-364 times"]);
+        tempData.push(lookup["365+ times"]);
+    }
+    else if (self.filtering.set === "Do you bike" ||
+        self.filtering.set === "Ever been in rehabilitation program" ||
+        self.filtering.set === "Ever have 5 or more drinks every day?" ||
+        self.filtering.set === "Ever use any form of cocaine" ||
+        self.filtering.set === "Ever used heroin" ||
+        self.filtering.set === "Ever used marijuana or hashish" ||
+        self.filtering.set === "Ever used methamphetamine" ||
+        self.filtering.set === "Had at least 12 alcohol drinks/1 yr?" ||
+        self.filtering.set === "Had sex with new partner/year" ||
+        self.filtering.set === "Smoked at least 100 cigarettes in life") {
+        tempData.push(lookup["No"]);        
+        tempData.push(lookup["Yes"]);
+    }
+    else if (self.filtering.set === "Do you now smoke cigarettes") {
+        tempData.push(lookup["Not at all"]);        
+        tempData.push(lookup["Some days"]);
+        tempData.push(lookup["Every day"]);
     }
     else {
         tempData = self.displayData;

@@ -1,7 +1,7 @@
 // on page load...
 $(function(){
-    var allData = [];
-    var parsedData = [];
+    var allData = {};
+    var parsedData = {};
     var metaData = {};
     var outputFiltering = {
         brush: {}
@@ -12,17 +12,17 @@ $(function(){
     var filterGroup = "personal";
     var selectedGraph;
     var selectedGraphNumber;
-    var filterGroups = ["groupPersonal", "groupDiet"];
+    var filterGroups = ["groupPersonal", "groupDiet", "groupPhysical", "groupSex", "groupDrug"];
     var graphs = {
         lastId: 0
     };
 
     window.selectGraph = function(id, number) {
         number = parseInt(number);
-        var graphSection, i, keys, graphNumber;
+        var graphSection, i, keys, graphNumber, filterTarget;
         
         if (selectedGraph === id) {
-            console.log("already selected graph");
+            //console.log("already selected graph");
             return;
         }
         //console.log("selecting graph:" + id);
@@ -43,6 +43,10 @@ $(function(){
         // add active class
         graphSection = document.getElementById("graphSection" + number);
         graphSection.className += " active";
+        
+        filterTarget = document.getElementById("filterTarget");
+        filterTarget.innerHTML = "Graph " + selectedGraphNumber;
+        
         
         // update filters
         filterEventHandler.selectGraph(id);
@@ -100,8 +104,8 @@ $(function(){
                 newFilter[keys[i]].push(filterInput[j]);
             }
         }
-        debugger;
-        addGraph();
+
+        addGraph(graphs["graph" + number].filtering.xAxisSet);
     }
     
     window.deleteGraph = function(number) {
@@ -126,7 +130,6 @@ $(function(){
         keys = Object.keys(graphs);
         
         // if this graph was selected, select a different graph
-        debugger;
         if (selectedGraphNumber === number) {
             for (i = 0; i < keys.length; i++) {
                 if (keys[i] !== 'lastId') {
@@ -139,14 +142,42 @@ $(function(){
         }
     }
     
+    window.changeAxisLabel = function(id) {
+        var tagId = "options" + id,
+            newAxisLabel = document.getElementById(tagId).value;
+            
+        graphs[id].changeAxisLabel(newAxisLabel);
+    }
+    
+    function getAllAxisSets(selected, id) {
+        var keys, i, returnString = "", tagId = "options" + id;
+        returnString += "<select id=\"" + tagId + "\" onchange=\"changeAxisLabel('" + id + "')\" onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\">";
+        keys = Object.keys(parsedData);
+        keys.sort();
+        for (i = 0; i < keys.length; i++) {
+            if (keys[i] === "id") {
+                continue;
+            }
+            if (keys[i] === selected) {
+                returnString += "<option value=\"" + keys[i] + "\" selected>" + keys[i] + "</option>";
+            }
+            else {
+                returnString += "<option value=\"" + keys[i] + "\">" + keys[i] + "</option>";                
+            }
+        }
+        returnString += "</select>";
+        return returnString;
+    }
+    
     /**
      * Add a graph to the view
      */
-    function addGraph() {
+    function addGraph(xAxisSet) {
         var id, filtering, 
             htmlAddition = "";
         // generate a new graph
         var graphsContainer = document.getElementById("graphsContainer");
+        var newSection;
         graphs.lastId += 1;
 
         // filtering.xAxisSet = "# days used marijuana or hashish/month";
@@ -160,7 +191,15 @@ $(function(){
             id: id
         };
         
-        htmlAddition += "<section id=\"graphSection" + graphs.lastId + "\" class=\"single-graph-container active\">";
+        // if we are copying, change the axis to be the copied graph's axis
+        if (xAxisSet) {
+            filtering.xAxisSet = xAxisSet;
+        }
+        
+        // must use appendChild as to not reset the xAxis selection
+        newSection = document.createElement('section');
+        newSection.setAttribute('id', "graphSection" + graphs.lastId);
+        newSection.setAttribute('class', "single-graph-container active");
         htmlAddition += "<header>";
         htmlAddition += "<h4 onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\"><span id=\"" + id + "Name\" class=\"graph-name\">Graph " + graphs.lastId + "</span></h4>";      
         htmlAddition += "<div class=\"delete-graph\" onclick=\"deleteGraph('" + graphs.lastId + "')\"></div><div class=\"copy-graph\" onclick=\"copyGraph('" + graphs.lastId + "')\"></div><div class=\"add-graph\" onclick=\"addNewGraph()\"></div>";
@@ -172,9 +211,26 @@ $(function(){
         htmlAddition += "<g class=\"xAxis\"></g><g class=\"yAxis\"></g><g class=\"graph\"></g>";
         htmlAddition += "</svg>";
         htmlAddition += "</div>";
-        htmlAddition += "<section class=\"x-axis-label\"><h5>" + filtering.xAxisSet + "</h5></section>";
-        htmlAddition += "</section>";
-        graphsContainer.innerHTML += htmlAddition;
+        htmlAddition += "<section class=\"x-axis-label\"><h5>" + getAllAxisSets(filtering.xAxisSet, id) + "</h5></section>";
+        newSection.innerHTML = htmlAddition;
+        graphsContainer.appendChild(newSection);
+        
+        // can't do it this way, as .innerHTML will reset the form inputs (such as <select>)
+        // htmlAddition += "<section id=\"graphSection" + graphs.lastId + "\" class=\"single-graph-container active\">";
+        // htmlAddition += "<header>";
+        // htmlAddition += "<h4 onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\"><span id=\"" + id + "Name\" class=\"graph-name\">Graph " + graphs.lastId + "</span></h4>";      
+        // htmlAddition += "<div class=\"delete-graph\" onclick=\"deleteGraph('" + graphs.lastId + "')\"></div><div class=\"copy-graph\" onclick=\"copyGraph('" + graphs.lastId + "')\"></div><div class=\"add-graph\" onclick=\"addNewGraph()\"></div>";
+        // htmlAddition += "<h6 id=\"" + id + "Exclusion\"  onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\"></h6>"; 
+        // htmlAddition += "</header>";
+        // htmlAddition += "<div class=\"graph-wrapper\" onclick=\"selectGraph('" + id + "', '" + graphs.lastId + "')\">";
+        // htmlAddition += "<h5>Count</h5>";
+        // htmlAddition += "<svg id=\"" + id + "\" width=\"340\" height=\"200\">";
+        // htmlAddition += "<g class=\"xAxis\"></g><g class=\"yAxis\"></g><g class=\"graph\"></g>";
+        // htmlAddition += "</svg>";
+        // htmlAddition += "</div>";
+        // htmlAddition += "<section class=\"x-axis-label\"><h5>" + getAllAxisSets(filtering.xAxisSet, id) + "</h5></section>";
+        // htmlAddition += "</section>";
+        // graphsContainer.innerHTML += htmlAddition;
         
         // bind graph in d3
         graphs[id] = new GraphVis(d3.select("#" + id), allData, metaData, eventHandler, filtering, outputFiltering);
@@ -212,6 +268,36 @@ $(function(){
         addGraphFilter("filterVisStore", "Money spent at supermarket/grocery store", "diet");
         addGraphFilter("filterVisCarry", "Money spent on carryout/delivered foods", "diet");
         addGraphFilter("filterVisOut", "Money spent on eating out", "diet");
+        
+        addGraphFilter("filterVisRecreation", "Day vigorous recreation / week", "physical");
+        addGraphFilter("filterVisWalk", "Days walk or bike / week", "physical");
+        addGraphFilter("filterVisBike", "Do you bike", "physical");
+        
+        addGraphFilter("filterVisSexOlder", "# sex partners five years older/year", "sex");
+        addGraphFilter("filterVisSexYounger", "# sex partners five years younger/year", "sex");
+        addGraphFilter("filterVisCondom", "# times had sex without condom/year", "sex");
+        addGraphFilter("filterVisAnal", "# times had vaginal or anal sex/year", "sex");
+        addGraphFilter("filterVisSexYear", "Had sex with new partner/year", "sex");
+        addGraphFilter("filterVisSexOld", "How old when first had sex", "sex");
+        addGraphFilter("filterVisSexTotal", "Total number of sex partners/year", "sex");
+        
+        addGraphFilter("filterVisMari", "# days used marijuana or hashish/month", "drug");
+        addGraphFilter("filterVisMeth", "# days used methamphetamine/month", "drug");
+        addGraphFilter("filterVisCoc", "# of days used cocaine/month", "drug");
+        addGraphFilter("filterVisHero", "# of days used heroin/month", "drug");
+        addGraphFilter("filterVisStartSmoke", "Age started smoking cigarettes regularly", "drug");
+        addGraphFilter("filterVisDrinksDay", "Avg # alcoholic drinks/day -past 12 mos", "drug");
+        addGraphFilter("filterVisCigsDay", "Avg # cigarettes/day during past 30 days", "drug");
+        addGraphFilter("filterVisNowSmoke", "Do you now smoke cigarettes", "drug");
+        addGraphFilter("filterVisRehab", "Ever been in rehabilitation program", "drug");
+        addGraphFilter("filterVisFiveDrinks", "Ever have 5 or more drinks every day?", "drug");
+        addGraphFilter("filterVisEverCoc", "Ever use any form of cocaine", "drug");
+        addGraphFilter("filterVisEverHero", "Ever used heroin", "drug");
+        addGraphFilter("filterVisEverMar", "Ever used marijuana or hashish", "drug");
+        addGraphFilter("filterVisEverMeth", "Ever used methamphetamine", "drug");
+        addGraphFilter("filterVisDrinksYear", "Had at least 12 alcohol drinks/1 yr?", "drug");
+        addGraphFilter("filterVisSmokedLife", "Smoked at least 100 cigarettes in life", "drug");
+        
         
         // output graphs
         // filtering.xAxisSet = "Age";
@@ -352,6 +438,12 @@ $(function(){
                 allData[i]["Soft drinks available at home"] = "Sometimes";
             }
             fromNullToZero(i, "Total number of sex partners/year");
+            if (!allData[i]["How old when first had sex"]) {
+                allData[i]["How old when first had sex"] = "Never";
+            }
+            if (!allData[i]["Age started smoking cigarettes regularly"]) {
+                allData[i]["Age started smoking cigarettes regularly"] = "Never";
+            }
 
             // it's hard to decipher what NULL means...
             delete allData[i]["Tried to quit smoking"];
@@ -385,7 +477,21 @@ $(function(){
             }
             else if (allData[i]["Race"] === "Other Hispanic") {
                 allData[i]["Race"] = "Hispanic";
-            }    
+            }
+            
+            if (allData[i]["# times had sex without condom/year"] === "Less than half the time") {
+                allData[i]["# times had sex without condom/year"] = "< Half the time";
+            }
+            else if (allData[i]["# times had sex without condom/year"] === "More than half the time") {
+                allData[i]["# times had sex without condom/year"] = "> Half the time";
+            }
+            
+            if (allData[i]["# times had vaginal or anal sex/year"] === "365 times or more") {
+                allData[i]["# times had vaginal or anal sex/year"] = "365+ times";
+            }
+            else if (allData[i]["# times had vaginal or anal sex/year"] === "2 - 11 times") {
+                allData[i]["# times had vaginal or anal sex/year"] = "2-11 times";
+            } 
         }
     }
     /**
