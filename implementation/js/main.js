@@ -179,10 +179,6 @@ $(function(){
         var graphsContainer = document.getElementById("graphsContainer");
         var newSection;
         graphs.lastId += 1;
-
-        // filtering.xAxisSet = "# days used marijuana or hashish/month";
-        // filtering.excludeInRange = "0";
-        // filtering.exclusionId = "graph1Exclusion";
         
         id = "graph" + graphs.lastId;
            
@@ -191,7 +187,7 @@ $(function(){
             id: id
         };
         
-        // if we are copying, change the axis to be the copied graph's axis
+        //if we are copying, change the axis to be the copied graph's axis
         if (xAxisSet) {
             filtering.xAxisSet = xAxisSet;
         }
@@ -234,7 +230,12 @@ $(function(){
         
         // bind graph in d3
         graphs[id] = new GraphVis(d3.select("#" + id), allData, metaData, eventHandler, filtering, outputFiltering);
-        selectGraph(id, graphs.lastId);      
+        selectGraph(id, graphs.lastId);
+
+        //if we are copying, change the axis to be the copied graph's axis (this step will add exclusions if needed)
+        if (xAxisSet) {
+            graphs[id].changeAxisLabel(xAxisSet);     
+        }
     }
 
     /**

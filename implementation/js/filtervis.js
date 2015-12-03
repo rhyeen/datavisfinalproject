@@ -74,7 +74,7 @@ FilterVis.prototype.initializeVis = function () {
 
     self.colorScale = d3.scale.linear()
         .domain([yMin/2, yMax])
-        .range(["#EEE", "#444"]);
+        .range(["#DDD", "#444"]);
 
     // setup axis
     self.xAxis = d3.svg.axis()

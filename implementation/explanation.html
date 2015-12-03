@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Sex, Drugs, and Munchies</title>
+	<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
+	<script src="http://code.jquery.com/jquery-2.1.4.js" charset="utf-8"></script>
+	<script src="http://d3js.org/queue.v1.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/filtervis.js"></script>
+    <script src="js/graphvis.js"></script>
+    <script src="js/filtertoggle.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+	<div class="explanation-container">
+		<header class="main-header">
+			<h1>Sex, Drugs, and Munchies</h1>
+			<h2>An Explanation and Story of Process</h2>
+		</header>
+		<div class="extra-page">
+            <a href="index.html">Back to Main Visualization</a>
+        </div>
+        <iframe width="560" height="315" style="margin: 20px auto; width: 560px; display: block" src="https://www.youtube.com/embed/JsEm-CDj4qM" frameborder="0" allowfullscreen></iframe>
+		<div class="extra-description">
+	        <h4>Getting the Data</h4>
+	        <p>We wanted users to be able to explore correlations among health related behaviors.  Our data source is retreived from <a href="http://wwwn.cdc.gov/Nchs/Nhanes/Search/DataPage.aspx?Component=Questionnaire&CycleBeginYear=2009" target="_blank">CDC's annual health questionnaire</a>.  There were 50 questionnaires that thousands of individuals answered relating to a person's demographics and health behavior.  We narrowed our focus to categories that we thought would have the most interesting exploratory results.  The extracted data had to be modified for human readability, normalized for visualization, and all special cases had to be handled.</p>
+	        <p>A link to our data before normalization can be <a href="data/data.json" target="_blank">found here</a>.</p>
+	        <h4>Using the Visualization</h4>
+	        <p>The graphs show one question from the questionnaire and the count of different answers for that question.  To change the question shown on a graph, use the dropdown.  To add a new graph, copy a particular graph, or delete a particular graph, use the three buttons next to a graph.</p>
+	        <p>Since one person answered multiple questions, you may filter particular people and their answers from the graphs by using the filtering section.  Brush the heatmaps of questions in the filter section to filter the response counts.  Click on a filter category to see more filtering options.</p>
+	        <p>The filter section is associated with the selected graph.  Click on a graph to select it.</p>
+	        <h4>Results</h4>
+	        <p>Overall, we tried to take complex data with complex associations among the data and create a simple-to-use yet completely exploratory visualization.  The results are not perfect, but we consider it a well thought out approach for balancing open exploration, clear results, functionality.</p>
+	        <h4>Secondary Visualization</h4>
+	        <p>We also created a <a href="gender.html">second visualization</a> that is more traditional in displaying data and results.</p>
+	        <p>We wanted to show differences in gender for different dietary behaviors.  Hovering over color-filled elements will update the graphs to reflect the hovered selection.</p>
+	        <p>The primary reason for this alternative visualization is to show the extreme contrast between an exploration-based visualization (i.e. our primary visualization), and a story-based visualization.</p>
+	    </div>
+    </div>
+</body>

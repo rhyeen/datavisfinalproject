@@ -374,7 +374,9 @@ GraphVis.prototype.initializeVis = function () {
     //     .attr("d", areaGenerator(self.displayData));
 };
 
-
+/**
+ * Set the xAxis label to be the specified label.  Add exclusions when needed.
+ */
 GraphVis.prototype.changeAxisLabel = function (newAxisSet) {
     var ex;
     var self = this;

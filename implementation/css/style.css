@@ -62,7 +62,8 @@ a:hover {text-decoration: none;}
 }
 
 .page-container {
-    margin: 20px;
+    max-width: 880px;
+    margin: 20px auto;
 }
 
 .main-header {
@@ -171,14 +172,77 @@ footer {
 }
 
 .overlay-filter rect {
-    fill: #3CD1FA;
-    fill-opacity: .75;
+    fill-opacity: 1;
     mix-blend-mode: color;
 }
 
 .overlay-filter-deselect rect {
-    fill: #3CD1FA;
     fill-opacity: 0;
+}
+
+.input-brush {
+    fill-opacity: 1;
+    mix-blend-mode: color;
+}
+
+#groupPersonal .overlay-filter rect {
+    fill: #3CD1FA;
+}
+
+#groupPersonal .overlay-filter-deselect rect {
+    fill: #3CD1FA;
+}
+
+#groupPersonal .input-brush {
+    fill: #3CD1FA;
+}
+
+#groupDiet .overlay-filter rect {
+    fill: #38A850;
+}
+
+#groupDiet .overlay-filter-deselect rect {
+    fill: #38A850;
+}
+
+#groupDiet .input-brush {
+    fill: #38A850;
+}
+
+#groupPhysical .overlay-filter rect {
+    fill: #A86038;
+}
+
+#groupPhysical .overlay-filter-deselect rect {
+    fill: #A86038;
+}
+
+#groupPhysical .input-brush {
+    fill: #A86038;
+}
+
+#groupSex .overlay-filter rect {
+    fill: #FF0080;
+}
+
+#groupSex .overlay-filter-deselect rect {
+    fill: #FF0080;
+}
+
+#groupSex .input-brush {
+    fill: #FF0080;
+}
+
+#groupDrug .overlay-filter rect {
+    fill: #47C9B6;
+}
+
+#groupDrug .overlay-filter-deselect rect {
+    fill: #47C9B6;
+}
+
+#groupDrug .input-brush {
+    fill: #47C9B6;
 }
 
 .graphs-container {
@@ -206,11 +270,7 @@ footer {
     margin-left: 50px;
 }
 
-.input-brush {
-    fill: #3CD1FA;
-    fill-opacity: .75;
-    mix-blend-mode: color;
-}
+
 
 .filter-graph {
     padding: 0;
@@ -281,4 +341,31 @@ footer {
 
 .extra-page a:hover {
     background-color: #188DA8;
+}
+
+.extra-description div {
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #C6381C;
+}
+
+.extra-description p {
+    font-size: 12px;
+    line-height: 16px;
+    color: #333;
+    text-align: justify;
+    margin-bottom: 10px;
+}
+
+.extra-description a {
+    color: #3861E5;
+}
+
+.extra-description a:hover {
+    text-decoration: underline;
+}
+
+.explanation-container {
+    width: 600px;
+    margin: 0 auto;
 }
