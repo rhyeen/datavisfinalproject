@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<!--
+    NOTE: Due to plagerism concerns, we decided to not include 
+    this section of the project in our final version.
+
+    We kept it, just to show the work process invovled; however,
+    we ask not to be evaluated based on the content of this document.
+-->
 
 <meta charset="utf-8">
 
@@ -245,6 +252,10 @@
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
+    /**
+     * CITE NPashaP (May 12, 2014). Referenced: November 2015
+     * http://bl.ocks.org/NPashaP/96447623ef4d342ee09b#index.html
+     */
     function dashboard(id, fData){
         var barColor = 'lightgreen';
        // function segColor(c){ return {female:"#807dba", male:"#e08214"}[c]; }
@@ -443,9 +454,14 @@
                 leg= legend(tF);  // create the legend.
 
     }
+    // END CITE
 </script>
 
 <script>
+    /**
+     * CITE NPashaP (May 12, 2014). Referenced: November 2015
+     * http://bl.ocks.org/NPashaP/96447623ef4d342ee09b#index.html
+     */
     var freqData=[
         {State:'Always',freq:{male:1886, female:2103}}
         ,{State:'Most of the time',freq:{male:556, female:574}}
@@ -488,6 +504,8 @@
         ,{State:'Never',freq:{male:460, female:470}}
 
     ];
+    // END CITE
+    
     function changeData() {
         var dataFile = freqData;
         dashboard('#dashboard', dataFile);

@@ -3,6 +3,7 @@
 # Sex, Drugs, and Munchies
 ## CS 5630 Final project
 ### Ryan Saunders (u0642422@utah.edu) and Bob Wong (bob.wong@nurs.utah.edu)
+### Website URL: `http://rhyeen.com/other/datavisfinal/index.html`
 
 # None obvious features
 Our graphs heavily rely on the ability to hover over elements and click-and-drag (for the filtering, for example).  It is highly recommended to use a computer with mouse/touchpad to see full functionality.
@@ -10,6 +11,9 @@ Our graphs heavily rely on the ability to hover over elements and click-and-drag
 For exact count/value amounts on a given graph, hover over an individual bar on the graph.
 
 Filtering is specific to the selected graph.  If you select a different graph, the filtering view will update.
+
+# Screencast
+To view the screencast, please visit `https://youtu.be/DSbclN679vc`
 
 # Implementation (Code)
 See the `implementation` folder.
@@ -19,7 +23,7 @@ All code is original, except where cited.  Libraries are retrieved inside the he
 See `design_documents/proposal_document/proposal_saunders_wong.pdf`
 
 # Process book
-See `design_documents/process_book/process_saunders_wong.pdf`
+See `design_documents/process_book/process_saunders_wong_v1.pdf`
 
 # Data
 See the `data` folder and the `implementation/data` folder
